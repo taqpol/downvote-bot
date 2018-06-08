@@ -22,14 +22,14 @@ try:
 	driver.find_element_by_id('user_login').send_keys(username_field)
 	driver.find_element_by_id('passwd_login').send_keys(password_field)
 	driver.find_element_by_xpath("//button[text()='log in']").click()
-except NoSuchElementException:
+except:
 	driver.quit()
 else:
 	time.sleep(5)
 
 file_name = input('type the name of the file where usernames are stored: ')
 try:
-	with open('downvote_targets.txt') as file:
+	with open(file_name) as file:
 		names = [line.rstrip('\n') for line in file]
 except FileNotFoundError:
 	print('there was a problem locating the file')
@@ -39,7 +39,8 @@ aware_time_now = pytz.utc.localize(datetime.datetime.now())
 
 for name in names:
 	driver.get('https://old.reddit.com/user/{}'.format(name))
-	while True:
+	names.pop(0)
+	while names:
 		print('downvoting {}...'.format(name))
 		print('starting karma: {}'.format(driver.find_element_by_class_name('comment-karma').text))
 
@@ -47,7 +48,7 @@ for name in names:
 			comments = driver.find_elements_by_class_name('thing')
 			downvote_arrows = [comment.find_elements_by_class_name('arrow')[1] for comment in comments]
 			timestamps = [comment.find_element_by_tag_name('time') for comment in comments]
-		except NoSuchElementException:
+		except:
 			driver.quit()
 
 		if not len(timestamps):
@@ -64,8 +65,9 @@ for name in names:
 				else:
 					pass
 			else:
-				driver.refresh()
-				print('ending karma after series: {}'.format(driver.find_element_by_class_name('comment-karma')))
+				# driver.refresh()
+				# time.sleep(3)
+				# print('ending karma after series: {}'.format(driver.find_element_by_class_name('comment-karma').text))
 				break
 
 		if (aware_time_now - parse(timestamps[-1].get_attribute('datetime'))).days < 2:
@@ -75,11 +77,12 @@ for name in names:
 				break
 				driver.quit()
 			else:
-				driver.refresh()
-				print('ending karma after series: {}'.format(driver.find_element_by_class_name('comment-karma')))
+				# driver.refresh()
+				# time.sleep(3)
+				# next_button = driver.find_element_by_partial_link_text('next')
+				# print('ending karma after series: {}'.format(driver.find_element_by_class_name('comment-karma').text))
 				next_button.click()
 		else:
 			break
-			driver.quit()
 
 driver.quit()
