@@ -8,7 +8,8 @@ import pytz
 from dateutil.parser import parse
 
 chrome_options = Options()  
-chrome_options.add_argument("--headless")  
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("user-agent=me")  
 chromedriver = os.path.join(os.getcwd(), 'chromedriver.exe')
 driver = webdriver.Chrome(executable_path=chromedriver, chrome_options=chrome_options)
 driver.implicitly_wait(10)
