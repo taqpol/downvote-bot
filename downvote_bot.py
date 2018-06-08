@@ -64,6 +64,8 @@ for name in names:
 				else:
 					pass
 			else:
+				driver.refresh()
+				print('ending karma after series: {}'.format(driver.find_element_by_class_name('comment-karma')))
 				break
 
 		if (aware_time_now - parse(timestamps[-1].get_attribute('datetime'))).days < 2:
