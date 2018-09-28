@@ -7,6 +7,10 @@ import datetime
 import pytz
 from dateutil.parser import parse
 
+import sys
+import pdb; pdb.set_trace()
+sys.modules.keys()
+
 chrome_options = Options()  
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("user-agent=me")  
