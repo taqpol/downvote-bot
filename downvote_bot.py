@@ -8,7 +8,6 @@ import pytz
 from dateutil.parser import parse
 
 import sys
-import pdb; pdb.set_trace()
 sys.modules.keys()
 
 chrome_options = Options()  
@@ -43,50 +42,47 @@ aware_time_now = pytz.utc.localize(datetime.datetime.now())
 
 for name in names:
 	driver.get('https://old.reddit.com/user/{}'.format(name))
-	names.pop(0)
-	while names:
-		print('downvoting {}...'.format(name))
-		print('starting karma: {}'.format(driver.find_element_by_class_name('comment-karma').text))
+	print('downvoting {}...'.format(name))
+	print('starting karma: {}'.format(driver.find_element_by_class_name('comment-karma').text))
 
-		try:
-			comments = driver.find_elements_by_class_name('thing')
-			downvote_arrows = [comment.find_elements_by_class_name('arrow')[1] for comment in comments]
-			timestamps = [comment.find_element_by_tag_name('time') for comment in comments]
-		except:
-			driver.quit()
+	try:
+		comments = driver.find_elements_by_class_name('thing')
+		downvote_arrows = [comment.find_elements_by_class_name('arrow')[1] for comment in comments]
+		timestamps = [comment.find_element_by_tag_name('time') for comment in comments]
+	except:
+		driver.quit()
 
-		if not len(timestamps):
-			break
-		if (aware_time_now - parse(timestamps[0].get_attribute('datetime'))).days > 2:
-			break
-		for downvote_button, timestamp in zip(downvote_arrows, timestamps):
-			if (aware_time_now - parse(timestamp.get_attribute('datetime'))).days < 2:
-				if 'downmod' not in downvote_button.get_attribute('class'):
-					downvote_button.click()
-					pause_time = random.randint(90,120)
-					print('downvoted at {}. pausing for {} seconds...'.format(datetime.datetime.now(), pause_time))
-					time.sleep(pause_time)
-				else:
-					pass
+	if not len(timestamps):
+		continue
+	if (aware_time_now - parse(timestamps[0].get_attribute('datetime'))).days > 2:
+		continue
+	for downvote_button, timestamp in zip(downvote_arrows, timestamps):
+		if (aware_time_now - parse(timestamp.get_attribute('datetime'))).days < 2:
+			if 'downmod' not in downvote_button.get_attribute('class'):
+				downvote_button.click()
+				pause_time = random.randint(90,120)
+				print('downvoted at {}. pausing for {} seconds...'.format(datetime.datetime.now(), pause_time))
+				time.sleep(pause_time)
 			else:
-				# driver.refresh()
-				# time.sleep(3)
-				# print('ending karma after series: {}'.format(driver.find_element_by_class_name('comment-karma').text))
-				break
-
-		if (aware_time_now - parse(timestamps[-1].get_attribute('datetime'))).days < 2:
-			try:
-				next_button = driver.find_element_by_partial_link_text('next')
-			except:
-				break
-				driver.quit()
-			else:
-				# driver.refresh()
-				# time.sleep(3)
-				# next_button = driver.find_element_by_partial_link_text('next')
-				# print('ending karma after series: {}'.format(driver.find_element_by_class_name('comment-karma').text))
-				next_button.click()
+				pass
 		else:
-			break
+			# driver.refresh()
+			# time.sleep(3)
+			# print('ending karma after series: {}'.format(driver.find_element_by_class_name('comment-karma').text))
+			continue
+
+	if (aware_time_now - parse(timestamps[-1].get_attribute('datetime'))).days < 2:
+		try:
+			next_button = driver.find_element_by_partial_link_text('next')
+		except:
+			continue
+		else:
+			# driver.refresh()
+			# time.sleep(3)
+			# next_button = driver.find_element_by_partial_link_text('next')
+			# print('ending karma after series: {}'.format(driver.find_element_by_class_name('comment-karma').text))
+			next_button.click()
+	else:
+		continue
 
 driver.quit()
